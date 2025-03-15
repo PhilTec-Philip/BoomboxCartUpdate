@@ -1,0 +1,7 @@
+{
+    "name": "BoomboxCart",
+    "version_number": "1.0.3",
+    "website_url": "",
+    "description": "Carts now double as a boombox! Grab a cart, press Y, and play youtube links for everyone to hear! Configurable volume and quality from the in-game boombox GUI.",
+    "dependencies": ["BepInEx-BepInExPack-5.4.2100"]
+}
