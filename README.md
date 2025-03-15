@@ -4,6 +4,8 @@ Adds a "Boombox" component into the cart with its own UI that plays youtube link
 Has volume and quality sliders as well to configure the music to your liking. One player can control the 
 Boombox UI at any time, and everyone (with the mod installed) can hear the songs you play too!
 
+## Usage
+
 <p>Make sure everyone in your lobby has the mod installed!</p>
 
 <p>How to use mod:</p>
@@ -26,5 +28,11 @@ Boombox UI at any time, and everyone (with the mod installed) can hear the songs
     <li>Visual indicators on the actual cart for what's happening with the boombox (maybe the lil jumpy sound bars when audio is playing), only if I learn how to do that...</li>
     <li>A global mute option in settings to mute all boombox audio if you can't stand your lobby</li>
 </ul>
+
+## Credits
+<p>A HUGE thanks to @survivalq and their <a href="https://github.com/survivalq/SemiBoombox">SemiBoombox Mod</a> for critical funcionality for parts of this mod. If you're looking to make your own boombox mod or just play audio from a third-party, check their mod out, it is much better code!!!
+
+Also big thanks to <a href="https://thunderstore.io/c/repo/p/SteamBlizzard/">Dan</a> for the incredible cover art. Go download his mods too!</p>
+
 <br>
 <p>Feel free to reach out to me on discord in <a href="https://discord.com/channels/1344557689979670578/1348739189109166120">this thread</a> in the <a href="https://discord.gg/WXEgqvJa">R.E.P.O Modding Server</a> for any bugs/comments/recommendations!</p>
