@@ -16,7 +16,8 @@ namespace BoomBoxCartMod.Util
 		private static ManualLogSource Logger => Instance.logger;
 
 		private static readonly string baseFolder = Path.Combine(Directory.GetCurrentDirectory(), "BoomboxedCart");
-		private const string YtDLP_URL = "https://github.com/yt-dlp/yt-dlp/releases/download/2025.02.19/yt-dlp.exe";
+		//private const string YtDLP_URL = "https://github.com/yt-dlp/yt-dlp/releases/download/2025.02.19/yt-dlp.exe";
+		private const string YtDLP_URL = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe";
 		private const string FFMPEG_URL = "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip";
 		private static readonly string ytDlpPath = Path.Combine(baseFolder, "yt-dlp.exe");
 		private static readonly string ffmpegFolder = Path.Combine(baseFolder, "ffmpeg");
@@ -31,7 +32,7 @@ namespace BoomBoxCartMod.Util
 
 			if (!File.Exists(ytDlpPath))
 			{
-				Console.WriteLine("yt-dlp not found. Downloading...");
+				Logger.LogInfo("yt-dlp not found. Downloading...");
 				await DownloadFileAsync(YtDLP_URL, ytDlpPath);
 			}
 
@@ -43,7 +44,7 @@ namespace BoomBoxCartMod.Util
 
 			if (needsFFmpeg)
 			{
-				Console.WriteLine("ffmpeg not found. Downloading and extracting...");
+				Logger.LogInfo("ffmpeg not found. Downloading and extracting...");
 				await DownloadAndExtractFFmpegAsync();
 			}
 
@@ -52,7 +53,7 @@ namespace BoomBoxCartMod.Util
 				throw new Exception($"ffmpeg executable was not found at {ffmpegBinPath} after extraction. Internet problem? Not on Windows problem?");
 			}
 
-			Console.WriteLine("Initialization complete.");
+			Logger.LogInfo("Initialization complete.");
 		}
 
 		private static async Task DownloadFileAsync(string url, string destinationPath)
@@ -77,11 +78,12 @@ namespace BoomBoxCartMod.Util
 					}
 					catch (Exception ex)
 					{
-						Console.WriteLine($"Warning: Failed to clean ffmpeg folder: {ex.Message}");
+						Logger.LogWarning($"Failed to clean ffmpeg folder: {ex.Message}");
 					}
 				}
 
-				Console.WriteLine($"Downloading FFmpeg from {FFMPEG_URL}...");
+				Logger.LogInfo($"Downloading FFmpeg from {FFMPEG_URL}...");
+
 				await DownloadFileAsync(FFMPEG_URL, zipPath);
 
 				if (!File.Exists(zipPath))
@@ -89,7 +91,7 @@ namespace BoomBoxCartMod.Util
 					throw new Exception("FFmpeg zip file not downloaded properly.");
 				}
 
-				Console.WriteLine($"Downloaded FFmpeg zip file ({new FileInfo(zipPath).Length} bytes). Extracting...");
+				Logger.LogInfo($"Downloaded FFmpeg zip file. Extracting...");
 
 				ZipFile.ExtractToDirectory(zipPath, ffmpegFolder);
 
@@ -97,30 +99,29 @@ namespace BoomBoxCartMod.Util
 
 				if (!File.Exists(ffmpegBinPath))
 				{
-					Console.WriteLine($"FFmpeg not found at expected path: {ffmpegBinPath}. Maaaaaaaaan");
-					Console.WriteLine("Searching for ffmpeg.exe in extracted files...");
+					Logger.LogInfo("FFmpeg not found at expected path. Searching for ffmpeg.exe in extracted files...");
 
 					string[] ffmpegFiles = Directory.GetFiles(ffmpegFolder, "ffmpeg.exe", SearchOption.AllDirectories);
 
 					if (ffmpegFiles.Length > 0)
 					{
 						string newPath = ffmpegFiles[0];
-						Console.WriteLine($"Found ffmpeg.exe at: {newPath}");
+						Logger.LogInfo($"Found ffmpeg.exe at: {newPath}");
 
 						ffmpegBinPath = newPath;
 					}
 					else
 					{
-						Console.WriteLine("No ffmpeg.exe found in the extracted files.");
+						Logger.LogError("ffmpeg.exe not found in extracted files. Uh oh!");
 						throw new Exception("ffmpeg.exe not found in extracted files. Uh oh!");
 					}
 				}
 
-				Console.WriteLine("FFmpeg extracted successfully.");
+				Logger.LogInfo("FFmpeg extracted successfully.");
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine($"Error downloading or extracting FFmpeg: {ex.Message}");
+				Logger.LogError($"Error downloading or extracting FFmpeg: {ex.Message}");
 				throw;
 			}
 		}
@@ -132,7 +133,7 @@ namespace BoomBoxCartMod.Util
 			string tempFolder = Path.Combine(baseFolder, Guid.NewGuid().ToString());
 			Directory.CreateDirectory(tempFolder);
 
-			//Logger.LogInfo($"Getting title and downloading audio for {videoUrl}...");
+			Logger.LogInfo($"Getting title and downloading audio for {videoUrl}...");
 
 			return await Task.Run(async () =>
 			{
@@ -144,7 +145,7 @@ namespace BoomBoxCartMod.Util
 						title = "Unknown Title";
 					}
 
-					Logger.LogInfo($"Got video title downloaded: {title}");
+					//Logger.LogInfo($"Got video title downloaded: {title}");
 
 					string noIckySpecialCharsFileName = $"audio_{DateTime.Now.Ticks}.%(ext)s";
 					string command = $"-x --audio-format mp3 --audio-quality 192K --ffmpeg-location \"{ffmpegBinPath}\" --output \"{Path.Combine(tempFolder, noIckySpecialCharsFileName)}\" {videoUrl}";
@@ -168,30 +169,61 @@ namespace BoomBoxCartMod.Util
 							throw new Exception("Failed to start yt-dlp process.");
 						}
 
+						string output = await process.StandardOutput.ReadToEndAsync();
+						string error = await process.StandardError.ReadToEndAsync();
+
 						process.WaitForExit();
+
+						//Logger.LogInfo($"yt-dlp Output: {output}");
+						//Logger.LogError($"yt-dlp Error Stream: {error}");
+
+						if (!string.IsNullOrEmpty(error))
+						{
+							Logger.LogInfo($"An error recorded in yt-dlp download, error is probably not fatal though");
+						}
 
 						if (process.ExitCode != 0)
 						{
-							string error = process.StandardError.ReadToEnd();
-							throw new Exception($"yt-dlp error: {error}");
+							throw new Exception($"yt-dlp download failed. Exit Code: {process.ExitCode}. Error: {error}");
 						}
 					}
+
+					//Logger.LogInfo("Audio download complete.");
+
+					await Task.Delay(1000);
 
 					string audioFilePath = Directory.GetFiles(tempFolder, "*.mp3").FirstOrDefault();
 					if (audioFilePath == null)
 					{
-						throw new Exception("Audio download failed.");
+						string[] allFiles = Directory.GetFiles(tempFolder);
+						Logger.LogError($"No MP3 files found. Total files: {allFiles.Length}");
+						foreach (string file in allFiles)
+						{
+							Logger.LogError($"Found file: {file}");
+						}
+						throw new Exception("Audio download failed. No MP3 file created.");
 					}
 
+					//Logger.LogInfo($"Successfully downloaded audio to: {audioFilePath}");
 					return (audioFilePath, title);
 				}
 				catch (Exception ex)
 				{
+					Logger.LogError($"Download Error: {ex}");
+					Logger.LogError($"Stack Trace: {ex.StackTrace}");
+
 					if (Directory.Exists(tempFolder))
 					{
-						Directory.Delete(tempFolder, true);
+						try
+						{
+							Directory.Delete(tempFolder, true);
+						}
+						catch (Exception cleanupEx)
+						{
+							Logger.LogError($"Failed to clean up temp folder: {cleanupEx}");
+						}
 					}
-					throw new Exception($"Error downloading audio: {ex.Message}");
+					throw;
 				}
 			});
 		}
@@ -200,8 +232,6 @@ namespace BoomBoxCartMod.Util
 		{
 			try
 			{
-				await InitializeAsync();
-
 				ProcessStartInfo psi = new ProcessStartInfo
 				{
 					FileName = ytDlpPath,

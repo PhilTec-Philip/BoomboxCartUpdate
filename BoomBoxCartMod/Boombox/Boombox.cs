@@ -205,7 +205,7 @@ namespace BoomBoxCartMod
 
 					songTitles[url] = title;
 					photonView.RPC("SetSongTitle", RpcTarget.AllBuffered, url, title);
-					Logger.LogInfo($"Set song title for url: {url} to {title}");
+					//Logger.LogInfo($"Set song title for url: {url} to {title}");
 
 					if (requesterId == PhotonNetwork.LocalPlayer.ActorNumber)
 					{
@@ -215,7 +215,7 @@ namespace BoomBoxCartMod
 					AudioClip clip = await GetAudioClipAsync(filePath);
 
 					downloadedClips[url] = clip;
-					Logger.LogInfo($"Downloaded and cached clip for url: {url}");
+					Logger.LogInfo($"Downloaded and cached clip for video: {title}");
 				}
 				catch (Exception ex)
 				{
@@ -650,7 +650,7 @@ namespace BoomBoxCartMod
 			Uri fileUri = new Uri(filePath);
 			string uri = fileUri.AbsoluteUri;
 
-			Logger.LogInfo($"Loading audio clip from: {uri}");
+			//Logger.LogInfo($"Loading audio clip from: {uri}");
 
 			using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(uri, AudioType.MPEG))
 			{
