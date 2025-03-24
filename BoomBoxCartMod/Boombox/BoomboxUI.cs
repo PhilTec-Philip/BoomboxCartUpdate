@@ -177,7 +177,7 @@ namespace BoomBoxCartMod
 				}
 				else
 				{
-					statusMessage = "Ready to play music! Enter a YouTube URL";
+					statusMessage = "Ready to play music! Enter a Video URL";
 				}
 			}
 		}
@@ -347,7 +347,7 @@ namespace BoomBoxCartMod
 
 			GUILayout.Space(10);
 			GUILayout.BeginHorizontal();
-			GUILayout.Label("Enter YouTube URL:", labelStyle, GUILayout.ExpandWidth(true));
+			GUILayout.Label("Enter Video URL:", labelStyle, GUILayout.ExpandWidth(true));
 
 			if (GUILayout.Button("Clear", smallButtonStyle, GUILayout.Width(60)))
 			{
@@ -464,14 +464,14 @@ namespace BoomBoxCartMod
 			GUI.enabled = boombox != null && !boombox.IsDownloadInProgress();
 			if (GUILayout.Button("▶ PLAY", buttonStyle, GUILayout.Height(40)))
 			{
-				if (IsValidYoutubeUrl(urlInput))
+				if (IsValidVideoUrl(urlInput))
 				{
 					photonView.RPC("RequestSong", RpcTarget.All, urlInput, PhotonNetwork.LocalPlayer.ActorNumber);
 					GUI.FocusControl(null);
 				}
 				else
 				{
-					ShowErrorMessage("Invalid YouTube URL!");
+					ShowErrorMessage("Invalid Video URL!");
 				}
 			}
 			GUI.enabled = true;
@@ -517,9 +517,9 @@ namespace BoomBoxCartMod
 			GUI.DragWindow(new Rect(0, 0, windowRect.width, 30));
 		}
 
-		private bool IsValidYoutubeUrl(string url)
+		private bool IsValidVideoUrl(string url)
 		{
-			return Boombox.IsValidYoutubeUrl(url);
+			return Boombox.IsValidVideoUrl(url);
 		}
 
 		private void ShowErrorMessage(string message)

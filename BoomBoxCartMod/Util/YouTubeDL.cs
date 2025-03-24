@@ -17,7 +17,7 @@ namespace BoomBoxCartMod.Util
 
 		private static readonly string baseFolder = Path.Combine(Directory.GetCurrentDirectory(), "BoomboxedCart");
 		//private const string YtDLP_URL = "https://github.com/yt-dlp/yt-dlp/releases/download/2025.02.19/yt-dlp.exe";
-		private const string YtDLP_URL = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe";
+		private const string YTDLP_URL = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe";
 		private const string FFMPEG_URL = "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip";
 		private static readonly string ytDlpPath = Path.Combine(baseFolder, "yt-dlp.exe");
 		private static readonly string ffmpegFolder = Path.Combine(baseFolder, "ffmpeg");
@@ -33,7 +33,7 @@ namespace BoomBoxCartMod.Util
 			if (!File.Exists(ytDlpPath))
 			{
 				Logger.LogInfo("yt-dlp not found. Downloading...");
-				await DownloadFileAsync(YtDLP_URL, ytDlpPath);
+				await DownloadFileAsync(YTDLP_URL, ytDlpPath);
 			}
 
 			bool needsFFmpeg = !File.Exists(ffmpegBinPath);
@@ -146,6 +146,8 @@ namespace BoomBoxCartMod.Util
 					}
 
 					//Logger.LogInfo($"Got video title downloaded: {title}");
+					// remove \n and \r from title
+					title = title.Replace("\n", "").Replace("\r", "");
 
 					string noIckySpecialCharsFileName = $"audio_{DateTime.Now.Ticks}.%(ext)s";
 					string command = $"-x --audio-format mp3 --audio-quality 192K --ffmpeg-location \"{ffmpegBinPath}\" --output \"{Path.Combine(tempFolder, noIckySpecialCharsFileName)}\" {videoUrl}";

@@ -9,6 +9,7 @@ using System.IO;
 using BepInEx.Logging;
 using System.Text.RegularExpressions;
 using System.Collections;
+using System.Linq;
 
 namespace BoomBoxCartMod
 {
@@ -51,10 +52,24 @@ namespace BoomBoxCartMod
 		private const float DOWNLOAD_TIMEOUT = 40f; // 40 seconds timeout for downloads
 		private Dictionary<string, Coroutine> timeoutCoroutines = new Dictionary<string, Coroutine>();
 
-		// regex will always be freaky to me
-		private static readonly Regex youtubeUrlRegex = new Regex(
-			 @"^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(?:-nocookie)?\.com|youtu\.be|rutube\.ru|music\.yandex\.ru|bilibili\.com))(\/(?:(?:[\w\-]+\?v=|embed\/|live\/|v\/)|video\/|album\/\d+\/track\/)?)([\w\-]+)(\S+)?$",
-			RegexOptions.Compiled | RegexOptions.IgnoreCase);
+		// all valid URL's to donwload audio from
+		private static readonly Regex[] supportedVideoUrlRegexes = new[]
+		{
+		// YouTube URLs
+		new Regex(@"^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(?:-nocookie)?\.com|youtu\.be))(\/(?:[\w\-]+\?v=|embed\/|live\/|v\/)?)([\w\-]+)(\S+)?$", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+    
+		// RuTube URLs
+		new Regex(@"^((?:https?:)?\/\/)?((?:www)?\.?)(rutube\.ru)(\/video\/)([\w\-]+)(\S+)?$", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+    
+		// Yandex Music URLs
+		new Regex(@"^((?:https?:)?\/\/)?((?:www)?\.?)(music\.yandex\.ru)(\/album\/\d+\/track\/)([\w\-]+)(\S+)?$", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+    
+		// Bilibili URLs
+		new Regex(@"^((?:https?:)?\/\/)?((?:www|m)\.)?(bilibili\.com)(\/video\/)([\w\-]+)(\S+)?$", RegexOptions.Compiled | RegexOptions.IgnoreCase),
+
+		// SoundCloud URLs
+		new Regex(@"^((?:https?:)?\/\/)?((?:www|m)\.)?(soundcloud\.com|snd\.sc)\/([\w\-]+\/[\w\-]+)", RegexOptions.Compiled | RegexOptions.IgnoreCase)
+		};
 
 		private void Awake()
 		{
@@ -137,9 +152,9 @@ namespace BoomBoxCartMod
 			return currentDownloadUrl;
 		}
 
-		public static bool IsValidYoutubeUrl(string url)
+		public static bool IsValidVideoUrl(string url)
 		{
-			return !string.IsNullOrWhiteSpace(url) && youtubeUrlRegex.IsMatch(url);
+			return !string.IsNullOrWhiteSpace(url) && supportedVideoUrlRegexes.Any(regex => regex.IsMatch(url));
 		}
 
 		[PunRPC]
@@ -147,12 +162,12 @@ namespace BoomBoxCartMod
 		{
 			//Logger.LogInfo($"RequestSong RPC received: url={url}, requesterId={requesterId}");
 
-			if (!IsValidYoutubeUrl(url))
+			if (!IsValidVideoUrl(url))
 			{
-				Logger.LogError($"Invalid YouTube URL: {url}");
+				Logger.LogError($"Invalid Video URL: {url}");
 				if (requesterId == PhotonNetwork.LocalPlayer.ActorNumber)
 				{
-					UpdateUIStatus("Error: Invalid YouTube URL.");
+					UpdateUIStatus("Error: Invalid Video URL.");
 				}
 				return;
 			}

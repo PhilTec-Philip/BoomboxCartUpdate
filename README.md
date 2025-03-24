@@ -1,8 +1,17 @@
 # BoomboxCart 
 
-Adds a "Boombox" component into the cart with its own UI that plays youtube links as audio from the cart. 
+Adds a "Boombox" component into the cart with its own UI that plays video links as audio from the cart. 
 Has volume and quality sliders as well to configure the music to your liking. One player can control the 
 Boombox UI at any time, and everyone (with the mod installed) can hear the songs you play too!
+
+Current websites you can play audio from:
+ - Youtube
+ - SoundCloud
+ - Rutube
+ - music.yandex
+ - Bilibili
+
+Reach out to me (link at the end) for issues with any service listed here, or suggestions on adding new ones from <a href="https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md">these sites</a>
 
 ## Usage
 
@@ -12,13 +21,13 @@ Boombox UI at any time, and everyone (with the mod installed) can hear the songs
 <ol>
     <li>Grab on to a cart</li>
     <li>Press 'Y' on your keyboard (note: only one person can have the UI open at a time)</li>
-    <li>Paste in a youtube link for the music you want to play</li>
+    <li>Paste in a video link for the music/video you want to play</li>
     <li>Press 'Play', wait a moment for the video to download (longer videos may take longer), and audio should start playing!</li>
 </ol>
 <p>Known Issues:</p>
 <ul>
     <li>Singleplayer does NOT work at all. Clicking "Host Game" and playing solo works though!</li>
-    <li>Small stutter when audio is downloaded (longer youtube vid, longer stutter)</li>
+    <li>Small stutter when audio is downloaded (longer video, longer stutter)</li>
 </ul>
 
 <p>Possible Future Features:</p>
@@ -32,7 +41,10 @@ Boombox UI at any time, and everyone (with the mod installed) can hear the songs
 ## Credits
 <p>A HUGE thanks to @survivalq and their <a href="https://github.com/survivalq/SemiBoombox">SemiBoombox Mod</a> for critical funcionality for parts of this mod. If you're looking to make your own boombox mod or just play audio from a third-party, check their mod out, it is much better code!!!
 
+Big thanks to all the members in the <a href="https://discord.gg/WXEgqvJa">R.E.P.O Modding Server</a> that report bugs and help me test new versions! This includes but not limited to: <a href="https://thunderstore.io/c/repo/p/SteamBlizzard/">Dan</a>, Dreepye, Vehzx, and Wiz!
+
 Also big thanks to <a href="https://thunderstore.io/c/repo/p/SteamBlizzard/">Dan</a> for the incredible cover art. Go download his mods too!</p>
 
-<br>
+### Contact
+
 <p>Feel free to reach out to me on discord in <a href="https://discord.com/channels/1344557689979670578/1348739189109166120">this thread</a> in the <a href="https://discord.gg/WXEgqvJa">R.E.P.O Modding Server</a> for any bugs/comments/recommendations!</p>
