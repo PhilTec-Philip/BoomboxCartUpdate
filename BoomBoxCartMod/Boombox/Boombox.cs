@@ -53,7 +53,7 @@ namespace BoomBoxCartMod
 
 		// regex will always be freaky to me
 		private static readonly Regex youtubeUrlRegex = new Regex(
-			@"^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(?:-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|live\/|v\/)?)([\w\-]+)(\S+)?$",
+			 @"^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(?:-nocookie)?\.com|youtu\.be|rutube\.ru|music\.yandex\.ru|bilibili\.com))(\/(?:(?:[\w\-]+\?v=|embed\/|live\/|v\/)|video\/|album\/\d+\/track\/)?)([\w\-]+)(\S+)?$",
 			RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
 		private void Awake()
