@@ -18,7 +18,7 @@ namespace BoomBoxCartMod
 	{
 		private const string modGUID = "ColtG5.BoomboxCart";
 		private const string modName = "BoomboxCart";
-		private const string modVersion = "1.0.3";
+		private const string modVersion = "1.1.0";
 
 		private readonly Harmony harmony = new Harmony(modGUID);
 

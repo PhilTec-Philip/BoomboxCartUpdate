@@ -1,4 +1,6 @@
 # Changelog
+## 1.1.1
+Added GitHub link
 ## 1.1.0
  - Important fix for incorrect timeout error
  - Added support for more URL's than just youtube, see README for supported websites (probably more to come)
