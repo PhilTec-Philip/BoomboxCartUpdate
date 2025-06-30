@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using BepInEx.Configuration;
 using BepInEx.Logging;
 using BoomBoxCartMod.Util;
 using HarmonyLib;
@@ -10,6 +11,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine.UIElements;
+using UnityEngine.InputSystem;
 
 namespace BoomBoxCartMod
 {
@@ -25,6 +27,8 @@ namespace BoomBoxCartMod
 		internal static BoomBoxCartMod instance;
 		internal ManualLogSource logger;
 
+		public ConfigEntry<Key> OpenUIKey { get; private set; }
+
 		private void Awake()
 		{
 			if (instance == null)
@@ -36,6 +40,8 @@ namespace BoomBoxCartMod
 
 			Task.Run(() => YoutubeDL.InitializeAsync().Wait());
 			harmony.PatchAll();
+
+			OpenUIKey = Config.Bind("General", "OpenUIKey", Key.Y, "Key to open the Boombox UI when grabbing a cart.");
 		}
 	}
 }

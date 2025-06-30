@@ -39,7 +39,7 @@
       <HintPath>..\..\..\..\..\AppData\Roaming\Thunderstore Mod Manager\DataFolder\REPO\profiles\Default\BepInEx\core\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp">
-      <HintPath>D:\SteamLibrary\steamapps\common\REPO\REPO_Data\Managed\publicized_assemblies\Assembly-CSharp.dll</HintPath>
+      <HintPath>D:\SteamLibrary\steamapps\common\REPO\REPO_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx, Version=5.4.23.2, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -89,6 +89,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>D:\SteamLibrary\steamapps\common\REPO\REPO_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\SteamLibrary\steamapps\common\REPO\REPO_Data\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.UIElementsModule">
       <HintPath>D:\SteamLibrary\steamapps\common\REPO\REPO_Data\Managed\UnityEngine.UIElementsModule.dll</HintPath>
     </Reference>
@@ -106,6 +110,7 @@
     <Compile Include="Boombox\Boombox.cs" />
     <Compile Include="Boombox\BoomboxController.cs" />
     <Compile Include="Boombox\BoomboxUI.cs" />
+    <Compile Include="Boombox\VisualEffects.cs" />
     <Compile Include="Patches\PhysGrabCartPatch.cs" />
     <Compile Include="Patches\PlayerControllerPatch.cs" />
     <Compile Include="Plugin.cs" />

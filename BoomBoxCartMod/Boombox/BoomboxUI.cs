@@ -29,6 +29,7 @@ namespace BoomBoxCartMod
 		private Rect windowRect;
 		private Boombox boombox;
 		private BoomboxController controller;
+		private VisualEffects visualEffects;
 
 		private GUIStyle windowStyle;
 		private GUIStyle headerStyle;
@@ -59,6 +60,9 @@ namespace BoomBoxCartMod
 		private Vector2 scrollPosition = Vector2.zero;
 
 		private bool shouldClearFocus = false;
+		private bool waitingForKey = false;
+
+		private bool lightsOn = false;
 
 		private void Awake()
 		{
@@ -76,6 +80,12 @@ namespace BoomBoxCartMod
 				}
 
 				controller = GetComponent<BoomboxController>();
+
+				visualEffects = GetComponent<VisualEffects>();
+				if (visualEffects == null)
+				{
+					visualEffects = gameObject.AddComponent<VisualEffects>();
+				}
 
 				if (photonView == null)
 				{
@@ -112,14 +122,14 @@ namespace BoomBoxCartMod
 				}
 			}
 
-			if (isSliderBeingDragged && Input.GetMouseButtonUp(0))
+			if (isSliderBeingDragged && Mouse.current != null && Mouse.current.leftButton.wasReleasedThisFrame)
 			{
 				isSliderBeingDragged = false;
 				//Logger.LogInfo("Volume slider released, sending volume update");
 				SendVolumeUpdate();
 			}
 
-			if (isQualitySliderBeingDragged && Input.GetMouseButtonUp(0))
+			if (isQualitySliderBeingDragged && Mouse.current != null && Mouse.current.leftButton.wasReleasedThisFrame)
 			{
 				isQualitySliderBeingDragged = false;
 				//Logger.LogInfo("Quality slider released, sending qualtiy update");
@@ -437,6 +447,39 @@ namespace BoomBoxCartMod
 
 			GUILayout.EndHorizontal();
 
+			// Monsters Can Hear Music Toggle
+
+			GUILayout.Space(10);
+			bool monstersCanHear = boombox.MonstersCanHearMusic;
+			bool newMonstersCanHear = GUILayout.Toggle(monstersCanHear, "Monsters can hear audio");
+
+			if (newMonstersCanHear != monstersCanHear)
+			{
+				boombox.MonstersCanHearMusic = newMonstersCanHear;
+				// Logger.LogInfo($"Monsters can hear audio: {newMonstersCanHear}");
+			}
+
+			// Loop Song Toggle
+			GUILayout.Space(10);
+			bool loop = boombox.LoopSong;
+			bool newLoop = GUILayout.Toggle(loop, "Loop audio");
+			if (newLoop != loop)
+			{
+				boombox.LoopSong = newLoop;
+				// Logger.LogInfo($"Looping Audio: {newLoop}");
+			}
+
+
+			// Visual Effects Toggle
+			GUILayout.Space(10);
+			bool lightsOn = visualEffects != null && visualEffects.AreLightsOn();
+			bool newLightsOn = GUILayout.Toggle(lightsOn, "RGB Lights enabled");
+			if (newLightsOn != lightsOn && visualEffects != null)
+			{
+    			visualEffects.SetLights(newLightsOn);
+				Logger.LogInfo($"Visual Effects Enabled: {lightsOn}");
+			}
+
 			// Status Message Display
 
 			GUILayout.Space(15);
@@ -461,7 +504,18 @@ namespace BoomBoxCartMod
 
 			GUILayout.Space(10);
 			GUILayout.BeginHorizontal();
-			GUI.enabled = boombox != null && !boombox.IsDownloadInProgress();
+
+			// Rewind-Button (10 seconds back)
+			if (GUILayout.Button("<<", smallButtonStyle, GUILayout.Width(40), GUILayout.Height(40)))
+			{
+				if (boombox != null && boombox.audioSource != null && boombox.audioSource.clip != null)
+				{
+					float newTime = Mathf.Max(boombox.audioSource.time - 10f, 0f);
+					boombox.audioSource.time = newTime;
+				}
+			}
+
+			// PLAY-Button
 			if (GUILayout.Button("▶ PLAY", buttonStyle, GUILayout.Height(40)))
 			{
 				if (IsValidVideoUrl(urlInput))
@@ -474,15 +528,27 @@ namespace BoomBoxCartMod
 					ShowErrorMessage("Invalid Video URL!");
 				}
 			}
-			GUI.enabled = true;
 
-			GUI.enabled = boombox != null && boombox.isPlaying;
+			// STOP-Button
 			if (GUILayout.Button("\u25A0 STOP", buttonStyle, GUILayout.Height(40)))
 			{
-				photonView.RPC("StopPlayback", RpcTarget.All, PhotonNetwork.LocalPlayer.ActorNumber);
 				GUI.FocusControl(null);
+				photonView.RPC("StopPlayback", RpcTarget.All, PhotonNetwork.LocalPlayer.ActorNumber);
 			}
-			GUI.enabled = true;
+
+			// Fast-Forward-Button (10 seconds forward)
+			if (GUILayout.Button(">>", smallButtonStyle, GUILayout.Width(40), GUILayout.Height(40)))
+			{
+				if (boombox != null && boombox.audioSource != null && boombox.audioSource.clip != null)
+				{
+					float newTime = Mathf.Min(
+						boombox.audioSource.time + 10f,
+						boombox.audioSource.clip.length - 0.1f
+					);
+					boombox.audioSource.time = newTime;
+				}
+			}
+
 			GUILayout.EndHorizontal();
 
 			// Download Status Information
@@ -491,30 +557,35 @@ namespace BoomBoxCartMod
 			{
 				GUILayout.Space(10);
 				GUILayout.Label("Download in progress...", statusStyle);
+
+				GUILayout.BeginHorizontal();
+				GUILayout.FlexibleSpace();
+				if (GUILayout.Button("Force Cancel Download", buttonStyle, GUILayout.Width(200), GUILayout.Height(30)))
+				{
+					boombox.ForceCancelDownload();
+				}
+				GUILayout.FlexibleSpace();
+				GUILayout.EndHorizontal();
 			}
 
 			GUILayout.EndScrollView();
 
-			// Close Button
-
-			GUILayout.Space(10);
+			GUILayout.FlexibleSpace();
 			GUILayout.BeginHorizontal();
 			GUILayout.FlexibleSpace();
-			if (GUILayout.Button("Close", buttonStyle, GUILayout.Width(100), GUILayout.Height(30)))
+			if (GUILayout.Button("Close", buttonStyle, GUILayout.Width(260), GUILayout.Height(36)))
 			{
-				if (controller != null)
-				{
-					controller.ReleaseControl();
-				}
-				else
-				{
-					HideUI();
-				}
+    			if (controller != null)
+    			{
+        			controller.ReleaseControl();
+    			}
+    			else
+    			{
+        			HideUI();
+    			}
 			}
 			GUILayout.FlexibleSpace();
 			GUILayout.EndHorizontal();
-
-			GUI.DragWindow(new Rect(0, 0, windowRect.width, 30));
 		}
 
 		private bool IsValidVideoUrl(string url)

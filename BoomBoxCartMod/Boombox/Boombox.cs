@@ -128,6 +128,26 @@ namespace BoomBoxCartMod
 				isPlaying = false;
 				//Logger.LogInfo("Stopped premature audio playback while waiting for sync");
 			}
+
+			if (isPlaying && MonstersCanHearMusic && EnemyDirector.instance != null)
+			{
+				monsterAttractTimer += Time.deltaTime;
+				if (monsterAttractTimer >= monsterAttractInterval)
+				{
+					EnemyDirector.instance.SetInvestigate(transform.position, 5f);
+					monsterAttractTimer = 0f;
+				}
+			}
+			else
+			{
+				monsterAttractTimer = 0f;
+			}
+
+			if (isPlaying && !audioSource.isPlaying && LoopSong && audioSource.clip != null)
+			{
+				audioSource.time = 0f;
+				audioSource.Play();
+			}
 		}
 
 			private void OnDestroy()
@@ -141,6 +161,9 @@ namespace BoomBoxCartMod
 				}
 				timeoutCoroutines.Clear();
 			}
+
+		private float monsterAttractTimer = 0f;
+		private float monsterAttractInterval = 1.0f; // every second
 
 		public bool IsDownloadInProgress()
 		{
@@ -461,6 +484,11 @@ namespace BoomBoxCartMod
 			isPlaying = true;
 
 			UpdateUIStatus($"Now playing: {currentSongTitle}");
+
+			if (MonstersCanHearMusic && EnemyDirector.instance != null)
+{
+    EnemyDirector.instance.SetInvestigate(transform.position, 5f);
+}
 		}
 
 		private void CleanupCurrentPlayback()
@@ -599,6 +627,29 @@ namespace BoomBoxCartMod
 			}
 		}
 
+		public void ForceCancelDownload()
+		{
+			if (isDownloadInProgress)
+			{
+				isDownloadInProgress = false;
+				currentDownloadUrl = "";
+				currentRequestId = "";
+
+				// Clean up any running coroutines
+				foreach (var coroutine in timeoutCoroutines.Values)
+				{
+					if (coroutine != null)
+					{
+						StopCoroutine(coroutine);
+					}
+				}
+				timeoutCoroutines.Clear();
+
+				UpdateUIStatus("Download cancelled.");
+				Logger.LogInfo("Download was force cancelled by user.");
+			}
+		}
+
 		private void UpdateUIStatus(string message)
 		{
 			BoomboxUI ui = GetComponent<BoomboxUI>();
@@ -650,6 +701,21 @@ namespace BoomBoxCartMod
 
 				// somehow get new player to acc play the song for themselves too
 			}
+		}
+
+		private bool monstersCanHearMusic = true;
+
+		public bool MonstersCanHearMusic
+		{
+    		get => monstersCanHearMusic;
+    		set => monstersCanHearMusic = value;
+		}
+
+		private bool loopSong = false;
+		public bool LoopSong
+		{
+    		get => loopSong;
+    		set => loopSong = value;
 		}
 
 		public static async Task<AudioClip> GetAudioClipAsync(string filePath)

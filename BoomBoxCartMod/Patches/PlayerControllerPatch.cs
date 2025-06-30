@@ -55,7 +55,7 @@ namespace BoomBoxCartMod.Patches
 				PlayerGrabbingTracker.SetLocalPlayerGrabbing(__instance.physGrabObject.gameObject);
 
 				// If Y key is pressed and we're grabbing a cart, try to open the boombox UI
-				if (Keyboard.current != null && Keyboard.current.yKey.wasPressedThisFrame)
+				if (Keyboard.current != null && Keyboard.current[Instance.OpenUIKey.Value].wasPressedThisFrame)
 				{
 					//Logger.LogInfo($"Y key pressed while grabbing: {__instance.physGrabObject.name}");
 
