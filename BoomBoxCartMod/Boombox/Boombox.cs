@@ -116,6 +116,12 @@ namespace BoomBoxCartMod
 				//Logger.LogInfo("BoomboxController component added to Boombox");
 			}
 
+			if (GetComponent<Visualizer>() == null)
+			{
+				var vis = gameObject.AddComponent<Visualizer>();
+				vis.audioSource = audioSource; // Setze die AudioSource explizit
+			}
+
 			Logger.LogInfo($"Boombox initialized on this cart. AudioSource: {audioSource}, PhotonView: {photonView}");
 		}
 

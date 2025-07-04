@@ -33,7 +33,6 @@ Reach out to me (link at the end) for issues with any service listed here, or su
 <p>Possible Future Features:</p>
 <ul>
     <li>A config file to configure a few values that some people might want to</li>
-    <li>Visual indicators on the actual cart for what's happening with the boombox (maybe the lil jumpy sound bars when audio is playing), only if I learn how to do that...</li>
     <li>A global mute option in settings to mute all boombox audio if you can't stand your lobby</li>
 </ul>
 

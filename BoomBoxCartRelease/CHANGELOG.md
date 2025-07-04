@@ -1,11 +1,13 @@
 # Changelog
+## 1.2.1
+ - Added an Audio Visualizer (+ UI Checkbox)
 ## 1.2.0
- - Added a Button to Force Stop Downloads
- - Added a Button to decide whether a Monster should hear the played audio or not
- - Added a Button to decide whether the current audio listening to should be looped or not
- - Added a Button to Mute or Unmute audio (Client only)
- - Added a Button to Fast-Forward and one for rewinding (10 seconds each click)
- - Added a Button to toggle a Visual Effect on the Cart
+ - Added functionality to Force Stop Downloads (+ UI Button)
+ - Added functionality to decide whether a Monster should hear the played audio or not (+ UI Checkbox)
+ - Added functionality to decide whether the current audio listening to should be looped or not (+ UI Checkbox)
+ - Added functionality to Mute or Unmute audio (Client only) (+ UI Checkbox)
+ - Added functionality to Fast-Forward and one for rewinding (10 seconds each click) (+ UI Button)
+ - Added functionality to toggle a Visual Effect on the Cart (+ UI Checkbox)
  - Configurable Keybind for opening the Boombox UI (only with the REPOConfig Mod)
  - Edited the position of the 'Close' Button and enlarged it
  - Replaced broken Discord Link in the Readme

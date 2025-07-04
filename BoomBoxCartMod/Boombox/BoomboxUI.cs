@@ -30,6 +30,7 @@ namespace BoomBoxCartMod
 		private Boombox boombox;
 		private BoomboxController controller;
 		private VisualEffects visualEffects;
+		private Visualizer visualizer;
 
 		private GUIStyle windowStyle;
 		private GUIStyle headerStyle;
@@ -85,6 +86,13 @@ namespace BoomBoxCartMod
 				if (visualEffects == null)
 				{
 					visualEffects = gameObject.AddComponent<VisualEffects>();
+				}
+
+				visualizer = GetComponent<Visualizer>();
+				if (visualizer == null)
+				{
+					visualizer = gameObject.AddComponent<Visualizer>();
+					visualizer.audioSource = boombox.audioSource;
 				}
 
 				if (photonView == null)
@@ -477,7 +485,22 @@ namespace BoomBoxCartMod
 			if (newLightsOn != lightsOn && visualEffects != null)
 			{
     			visualEffects.SetLights(newLightsOn);
-				Logger.LogInfo($"Visual Effects Enabled: {lightsOn}");
+				// Logger.LogInfo($"Visual Effects Enabled: {lightsOn}");
+			}
+
+			// Visualizer Toggle
+			GUILayout.Space(10);
+			bool visualizerActive = visualizer != null && visualizer.enabled;
+			bool newVisualizerActive = GUILayout.Toggle(visualizerActive, "Audio Visualizer enabled");
+			if (newVisualizerActive != visualizerActive && visualizer != null)
+			{
+				visualizer.enabled = newVisualizerActive;
+				foreach (Transform bar in visualizer.GetComponentsInChildren<Transform>())
+				{
+					if (bar != visualizer.transform)
+						bar.gameObject.SetActive(newVisualizerActive);
+						// Logger.LogInfo($"Visualizer Active: {visualizerActive}");
+				}
 			}
 
 			// Status Message Display
